@@ -1,0 +1,6 @@
+{
+    "pathParameters": {
+        "accountId": "testAccountId"
+    },
+    "body": "{\"timestamp\":\"10\"}"
+}

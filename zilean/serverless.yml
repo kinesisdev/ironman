@@ -1,0 +1,85 @@
+service: zilean
+
+# Create an optimized package for our functions
+package:
+  individually: true
+
+custom:
+  zilean-account: 'zilean.account'
+
+provider:
+  name: aws
+  region: us-east-2
+  runtime: nodejs12.x
+  stage: prod
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-2:*:*"
+  environment:
+    RIOT_API_KEY: RGAPI-9f06fbe7-3ca5-48dc-98c7-e3a569bf8d65
+    ZILEAN_ACCOUNT: ${self:custom.zilean-account}
+
+functions:
+  addNewAccount:
+    handler: src/addNewAccount.handler
+    events:
+      - http:
+          path: zilean/accounts
+          method: post
+          cors: true
+
+  updateAccount:
+    handler: src/updateAccount.handler
+    events:
+      - http:
+          path: zilean/accounts/{accountId}
+          method: put
+          cors: true
+
+  deleteAccount:
+    handler: src/deleteAccount.handler
+    events:
+      - http:
+          path: zilean/accounts/{accountId}
+          method: delete
+          cors: true
+
+  forceUpdateNewMatchesAllAccounts:
+    handler: src/forceUpdateNewMatches.handler
+    events:
+      - http:
+          path: zilean/forceupdate/
+
+  forceUpdateNewMatchesById:
+    handler: src/forceUpdateNewMatchesById.handler
+    events:
+      - http:
+          path: zilean/forceupdate/{accountId}
+          method: post
+          cors: true
+
+  cronUpdateNewMatches:
+    handler: src/cronUpdateNewMatches.handler
+    events:
+      - schedule:
+          rate: cron(*/1 * * * ? *)
+          enabled: true
+
+# Plugins to run serverless locally, dynamodb-local always be first
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-bundle
+  - serverless-dotenv-plugin # Load .env as environment variables
+
+# Create our resources with separate CloudFormation templates
+resources:
+  # API Gateway Errors
+  - ${file(resources/api-gateway-errors.yml)}
