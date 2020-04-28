@@ -1,0 +1,8 @@
+{
+    "body": "{\"productId\":\"N50\",\"type\":\"Nhan\"}",
+    "requestContext": {
+        "identity": {
+            "cognitoIdentityId": "USER-TEST-1234"
+        }
+    }
+}
