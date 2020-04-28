@@ -1,5 +1,5 @@
 import validate from "./libs/validations/add-product-validation";
-import {s, f} from "./libs/db-lib";
+import dynamoDb from "./libs/db-lib";
 import { success, failure } from "./libs/response-lib";
 
 export async function main(event, context, callback) {
@@ -10,9 +10,6 @@ export async function main(event, context, callback) {
     if (err) {
         return failure(500, err.message);
     }
-
-    console.log(s);
-    console.log(f);
 
     const putParams = {
         TableName: process.env.KMC_PRODUCT,
@@ -26,21 +23,21 @@ export async function main(event, context, callback) {
             updatedAt: Date.now()
         }
     };
-    //
-    // const getParams = {
-    //     TableName: process.env.KMC_PRODUCT,
-    //     Key: {
-    //         productId: data.productId
-    //     }
-    // };
+
+    const getParams = {
+        TableName: process.env.KMC_PRODUCT,
+        Key: {
+            productId: data.productId
+        }
+    };
 
     try {
-        // var result = await get(getParams);
+        var result = await dynamoDb.get(getParams);
         var result = {};
         if (result.Item) {
             return success({message: "Account is already in database"});
         } else {
-            // await put(putParams);
+            await dynamoDb.put(putParams);
             var response = {
                 message: "Successfully add account into database",
                 productId: putParams.Item.productId

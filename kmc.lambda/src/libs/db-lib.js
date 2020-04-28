@@ -1,18 +1,12 @@
-export function s(body) {
-    return buildResponse(200, body);
-}
+import AWS from "aws-sdk";
 
-export function f(statusCode, body) {
-    return buildResponse(statusCode, body);
-}
+const client = new AWS.DynamoDB.DocumentClient();
 
-function buildResponse(statusCode, body) {
-    return {
-        statusCode: statusCode,
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true
-        },
-        body: JSON.stringify(body)
-    };
-}
+export default {
+  get   : (params) => client.get(params).promise(),
+  put   : (params) => client.put(params).promise(),
+  query : (params) => client.query(params).promise(),
+  update: (params) => client.update(params).promise(),
+  delete: (params) => client.delete(params).promise(),
+  scan: (params) => client.scan(params).promise(),
+};
