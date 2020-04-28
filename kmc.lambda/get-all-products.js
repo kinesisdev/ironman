@@ -1,4 +1,4 @@
-import * as dynamoDbLib from "./libs/dynamoDb-lib";
+import dynamoDbLib from "./libs/dynamoDb-lib";
 
 import { success, failure } from "./libs/response-lib";
 
