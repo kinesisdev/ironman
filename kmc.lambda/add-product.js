@@ -48,4 +48,8 @@ export async function main(event, context, callback) {
     //     return failure(500, { message: e.message });
     // }
 
+    console.log(validate);
+    console.log(success);
+    console.log(failure);
+
 }
