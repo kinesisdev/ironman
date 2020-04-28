@@ -1,5 +1,5 @@
 import validate from "./libs/validations/add-product-validation";
-import {get, put} from "./libs/dynamodb-lib";
+// import {get, put} from "./libs/dynamodb-lib";
 import { success, failure } from "./libs/response-lib";
 
 export async function main(event, context, callback) {
@@ -32,11 +32,12 @@ export async function main(event, context, callback) {
     };
 
     try {
-        var result = await get(getParams);
+        // var result = await get(getParams);
+        var result = {};
         if (result.Item) {
             return success({message: "Account is already in database"});
         } else {
-            await put(putParams);
+            // await put(putParams);
             var response = {
                 message: "Successfully add account into database",
                 productId: putParams.Item.productId
