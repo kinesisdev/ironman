@@ -11,10 +11,10 @@ const client = new AWS.DynamoDB.DocumentClient();
 //   scan: (params) => client.scan(params).promise(),
 // };
 
-export async function get(params) {
+export function get(params) {
     return client.get(params).promise();
 }
 
-export async function put(params) {
+export function put(params) {
     return client.put(params).promise();
 }
