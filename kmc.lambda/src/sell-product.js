@@ -1,5 +1,5 @@
 import validate from "./libs/validations/sell-product-validation";
-import dynamoDb from "./libs/dynamodb-lib";
+import dynamoDb from "./libs/db-lib";
 import { success, failure } from "./libs/response-lib";
 import * as uuid from "uuid";
 
