@@ -52,43 +52,43 @@ functions:
           method: post
           cors: true
 
-  getProductById:
-    handler: src/get-product-by-id.main
-    events:
-      - http:
-          path: products/{id}
-          method: get
-          cors: true
-
-  getAllProducts:
-    handler: src/get-all-products.main
-    events:
-      - http:
-          path: products
-          method: get
-          cors: true
-          request:
-              template:
-                application/json: >
-                  {
-                    "isSold": "$input.params('isSold')"
-                  }
-
-  updateProduct:
-    handler: src/update-product.main
-    events:
-      - http:
-          path: products/{id}
-          method: put
-          cors: true
-
-  sellProduct:
-    handler: src/sell-product.main
-    events:
-      - http:
-          path: products/{id}/sell
-          method: post
-          cors: true
+  # getProductById:
+  #   handler: src/get-product-by-id.main
+  #   events:
+  #     - http:
+  #         path: products/{id}
+  #         method: get
+  #         cors: true
+  #
+  # getAllProducts:
+  #   handler: src/get-all-products.main
+  #   events:
+  #     - http:
+  #         path: products
+  #         method: get
+  #         cors: true
+  #         request:
+  #             template:
+  #               application/json: >
+  #                 {
+  #                   "isSold": "$input.params('isSold')"
+  #                 }
+  #
+  # updateProduct:
+  #   handler: src/update-product.main
+  #   events:
+  #     - http:
+  #         path: products/{id}
+  #         method: put
+  #         cors: true
+  #
+  # sellProduct:
+  #   handler: src/sell-product.main
+  #   events:
+  #     - http:
+  #         path: products/{id}/sell
+  #         method: post
+  #         cors: true
 
 # Create our resources with separate CloudFormation templates
 resources:
