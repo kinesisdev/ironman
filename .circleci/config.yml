@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   deploy-service:
     docker:
-      - image: circleci/node:10.x
+      - image: circleci/node:10.0
     parameters:
       service_path:
         type: string
@@ -44,19 +44,7 @@ workflows:
   build-deploy:
     jobs:
       - deploy-service:
-          name: Deploy Users API
+          name: Deploy KMC Lambda
           service_path: kmc.lambda
-          stage_name: ${CIRCLE_BRANCH}
-          context: Development
-
-      - deploy-service:
-          name: Deploy Posts API
-          service_path: kmc.lambda
-          stage_name: ${CIRCLE_BRANCH}
-          context: Development
-
-      - deploy-service:
-          name: Deploy Cron Job
-          service_path: services/cron-job
           stage_name: ${CIRCLE_BRANCH}
           context: Development
