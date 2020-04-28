@@ -1,5 +1,5 @@
 import validate from "./libs/validations/add-product-validation";
-import {get, put} from "./libs/dynamodb-lib";
+import {s, f} from "./libs/db-lib";
 import { success, failure } from "./libs/response-lib";
 
 export async function main(event, context, callback) {
@@ -11,8 +11,8 @@ export async function main(event, context, callback) {
         return failure(500, err.message);
     }
 
-    console.log(get);
-    console.log(put);
+    console.log(s);
+    console.log(f);
 
     const putParams = {
         TableName: process.env.KMC_PRODUCT,
