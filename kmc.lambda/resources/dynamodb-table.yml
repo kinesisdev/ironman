@@ -1,0 +1,25 @@
+Resources:
+  KMCProduct:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.KMC_PRODUCT}
+      AttributeDefinitions:
+        - AttributeName: productId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: productId
+          KeyType: HASH
+      # Set the capacity to auto-scale
+      BillingMode: PAY_PER_REQUEST
+  KMCHistory:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.KMC_HISTORY}
+      AttributeDefinitions:
+        - AttributeName: historyId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: historyId
+          KeyType: HASH
+      # Set the capacity to auto-scale
+      BillingMode: PAY_PER_REQUEST
