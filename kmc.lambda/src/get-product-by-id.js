@@ -1,4 +1,4 @@
-import * as dynamoDbLib from "./libs/dynamoDb-lib";
+import dynamoDb from "./libs/dynamodb-lib";
 import { success, failure } from "./libs/response-lib";
 
 export async function main(event, context) {
@@ -10,7 +10,7 @@ export async function main(event, context) {
     };
 
     try {
-        const result = await dynamoDbLib.call("get", getParams);
+        const result = await dynamoDb.get(getParams);
         if (result.Item) {
             return success(result.Item);
         } else {

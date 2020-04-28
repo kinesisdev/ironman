@@ -45,7 +45,7 @@ provider:
 
 functions:
   addProduct:
-    handler: add-product.main
+    handler: src/add-product.main
     events:
       - http:
           path: products
@@ -53,7 +53,7 @@ functions:
           cors: true
 
   getProductById:
-    handler: get-product-by-id.main
+    handler: src/get-product-by-id.main
     events:
       - http:
           path: products/{id}
@@ -61,7 +61,7 @@ functions:
           cors: true
 
   getAllProducts:
-    handler: get-all-products.main
+    handler: src/get-all-products.main
     events:
       - http:
           path: products
@@ -75,7 +75,7 @@ functions:
                   }
 
   updateProduct:
-    handler: update-product.main
+    handler: src/update-product.main
     events:
       - http:
           path: products/{id}
@@ -83,7 +83,7 @@ functions:
           cors: true
 
   sellProduct:
-    handler: sell-product.main
+    handler: src/sell-product.main
     events:
       - http:
           path: products/{id}/sell

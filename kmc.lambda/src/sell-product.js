@@ -1,9 +1,6 @@
 import validate from "./libs/validations/sell-product-validation";
-
-import * as dynamoDbLib from "./libs/dynamoDb-lib";
-
+import dynamoDb from "./libs/dynamodb-lib";
 import { success, failure } from "./libs/response-lib";
-
 import * as uuid from "uuid";
 
 export async function main(event, context, callback) {
@@ -47,10 +44,10 @@ export async function main(event, context, callback) {
     };
 
     try {
-        var product = await dynamoDbLib.call("get", getProductParams);
+        var product = await dynamoDb.get(getProductParams);
         if (product.Item) {
-            await dynamoDbLib.call("put", putHistoryParams);
-            await dynamoDbLib.call("update", updateProductParams);
+            await dynamoDb.put(putHistoryParams);
+            await dynamoDb.update(updateProductParams);
             var response = {
                 message: "Successfully sell product",
                 productId: putHistoryParams.Item.productId

@@ -1,4 +1,4 @@
-import dynamoDbLib from "./libs/dynamoDb-lib";
+import dynamoDb from "./libs/dynamodb-lib";
 
 import { success, failure } from "./libs/response-lib";
 
@@ -7,17 +7,10 @@ export async function main(event, context) {
         TableName: process.env.KMC_PRODUCT
     };
 
-    const isSold = event.requestContext.isSold;
-
-    console.log(`IsSold value: ${isSold}`);
-
-    if (isSold) {
-        console.log("Sold");
-        return success({});
-    }
+    // const isSold = event.requestContext.isSold;
 
     try {
-        const result = await dynamoDbLib.call("scan", params);
+        const result = await dynamoDb.scan(params);
 
         // Return the matching list of items in response body
         return success(result.Items);

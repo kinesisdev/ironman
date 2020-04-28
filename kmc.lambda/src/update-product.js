@@ -1,4 +1,4 @@
-import * as dynamoDbLib from "./libs/dynamoDb-lib";
+import dynamoDb from "./libs/dynamodb-lib";
 import { success, failure } from "./libs/response-lib";
 
 export async function main(event, context) {
@@ -55,9 +55,9 @@ export async function main(event, context) {
     };
 
     try {
-        var result = await dynamoDbLib.call("get", getParams);
+        var result = await dynamoDb.get(getParams);
         if (result.Item) {
-            await dynamoDbLib.call("update", updateParams);
+            await dynamoDb.update(updateParams);
             var response = {
                 message: `Successfully update product ${productId} info`,
             };
