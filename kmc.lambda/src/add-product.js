@@ -33,7 +33,6 @@ export async function main(event, context, callback) {
 
     try {
         var result = await dynamoDb.get(getParams);
-        var result = {};
         if (result.Item) {
             return success({message: "Account is already in database"});
         } else {
