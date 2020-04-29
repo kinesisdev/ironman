@@ -8,11 +8,14 @@ export function failure(statusCode, body) {
 
 function buildResponse(statusCode, body) {
     return {
-        statusCode: statusCode,
+        statusCode: 200,
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": true
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify({
+            ...body,
+            code: statusCode
+        })
     };
 }

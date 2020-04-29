@@ -12,7 +12,7 @@ export async function main(event, context) {
     try {
         const result = await dynamoDb.get(getParams);
         if (result.Item) {
-            return success(result.Item);
+            return success({product: result.Item});
         } else {
             return failure(500, {
                 message: "Item not found"

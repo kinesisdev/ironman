@@ -13,7 +13,7 @@ export async function main(event, context) {
         const result = await dynamoDb.scan(params);
 
         // Return the matching list of items in response body
-        return success(result.Items);
+        return success({products: result.Items});
     } catch (e) {
         return failure(500, {
             message: e.message
