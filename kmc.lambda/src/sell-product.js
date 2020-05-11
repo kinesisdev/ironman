@@ -1,7 +1,7 @@
 import validate from "./libs/validations/sell-product-validation";
 import dynamoDb from "./libs/db-lib";
 import { success, failure } from "./libs/response-lib";
-import * as uuid from "uuid";
+import shortid from "shortid";
 
 export async function main(event, context, callback) {
     // Request body is passed in as a JSON encoded string in 'event.body'
@@ -17,21 +17,54 @@ export async function main(event, context, callback) {
         TableName: process.env.KMC_HISTORY,
         Item: {
             soldUser: event.requestContext.identity.cognitoIdentityId,
-            historyId: uuid.v1(),
+            historyId: shortid.generate(),
             productId: data.productId,
+            goldPrice: data.goldPrice,
+            reducedPrice: data.reducedPrice,
+            totalPrice: data.totalPrice,
             soldAt: Date.now(),
             updatedAt: Date.now()
         }
     };
+
+    const updateExpression =
+        "SET #type = :type, "
+            + "#name = :name, "
+            + "#goldWeight = :goldWeight, "
+            + "#beadWeight = :beadWeight, "
+            + "#wage = :wage, "
+            + "#goldPrice = :goldPrice, "
+            + "#price = :price, "
+            + "#updatedAt = :updatedAt, "
+            + "#isSold = :isSold";
 
     const updateProductParams = {
         TableName: process.env.KMC_PRODUCT,
         Key: {
             productId: data.productId
         },
-        UpdateExpression: "SET isSold = :isSold",
+        UpdateExpression: updateExpression,
         ExpressionAttributeValues: {
-            ":isSold": true,
+            ":type": data.type || null,
+            ":name": data.name || null,
+            ":goldWeight": data.goldWeight || null,
+            ":beadWeight": data.beadWeight || null,
+            ":price": data.price || null,
+            ":goldPrice": data.goldPrice || null,
+            ":wage": data.wage || null,
+            ":updatedAt": Date.now(),
+            ":isSold": true
+        },
+        ExpressionAttributeNames: {
+            "#type": "type",
+            "#name": "name",
+            "#goldWeight": "goldWeight",
+            "#beadWeight": "beadWeight",
+            "#price": "price",
+            "#goldPrice": "goldPrice",
+            "#wage": "wage",
+            "#updatedAt": "updatedAt",
+            "#isSold": "isSold"
         },
         ReturnValuse: "ALL_NEW"
     };
@@ -46,11 +79,15 @@ export async function main(event, context, callback) {
     try {
         var product = await dynamoDb.get(getProductParams);
         if (product.Item) {
-            await dynamoDb.put(putHistoryParams);
-            await dynamoDb.update(updateProductParams);
+            const historyItem = await dynamoDb.put(putHistoryParams);
+            const productItem = await dynamoDb.update(updateProductParams);
             var response = {
                 message: "Successfully sell product",
-                productId: putHistoryParams.Item.productId
+                historyId: historyItem.historyId,
+                goldPrice: historyItem.goldPrice,
+                reducedPrice: historyItem.reducedPrice,
+                totalPrice: historyItem.totalPrice,
+                ...productItem
             };
             return success(response);
         } else {

@@ -13,8 +13,6 @@ export async function main(event, context) {
         }
     };
 
-    console.log(productId);
-
     const updateExpression =
         "SET #type = :type, "
             + "#name = :name, "
