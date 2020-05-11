@@ -99,6 +99,14 @@ functions:
           method: post
           cors: true
 
+  getHistory:
+    handler: src/get-history.main
+    events:
+      - http:
+          path: history/{id}
+          method: get
+          cors: true
+
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

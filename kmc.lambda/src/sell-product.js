@@ -79,15 +79,11 @@ export async function main(event, context, callback) {
     try {
         var product = await dynamoDb.get(getProductParams);
         if (product.Item) {
-            const historyItem = await dynamoDb.put(putHistoryParams);
-            const productItem = await dynamoDb.update(updateProductParams);
+            await dynamoDb.put(putHistoryParams);
+            await dynamoDb.update(updateProductParams);
             var response = {
                 message: "Successfully sell product",
-                historyId: historyItem.historyId,
-                goldPrice: historyItem.goldPrice,
-                reducedPrice: historyItem.reducedPrice,
-                totalPrice: historyItem.totalPrice,
-                ...productItem
+                historyId: putHistoryParams.Item.historyId
             };
             return success(response);
         } else {
