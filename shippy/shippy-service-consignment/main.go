@@ -1,66 +1,92 @@
-package shippy_service_consignment
-
-import (
-	"context"
-	"encoding/json"
-	"io/ioutil"
-	"log"
-	"os"
-)
-
 package main
 
 import (
-"encoding/json"
-"io/ioutil"
-"log"
-"os"
+	"context"
+	"log"
+	"net"
+	"sync"
 
-"context"
-
-pb "github.com/<YourUserName>/shippy/shippy-service-consignment/proto/consignment"
-"google.golang.org/grpc"
+	pb "github.com/<YourUsername>/shippy-service-consignment/proto/consignment"
+	"google.golang.org/grpc"
 )
 
 const (
-	address         = "localhost:50051"
-	defaultFilename = "consignment.json"
+	port = ":50051"
 )
 
-func parseFile(file string) (*pb.Consignment, error) {
-	var consignment *pb.Consignment
-	data, err := ioutil.ReadFile(file)
+type repository interface {
+	Create(*pb.Consignment) (*pb.Consignment, error)
+	GetAll() []*pb.Consignment
+}
+
+// Repository - Dummy repository, this simulates the use of a datastore
+// of some kind. We'll replace this with a real implementation later on.
+type Repository struct {
+	mu           sync.RWMutex
+	consignments []*pb.Consignment
+}
+
+// Create a new consignment
+func (repo *Repository) Create(consignment *pb.Consignment) (*pb.Consignment, error) {
+	repo.mu.Lock()
+	updated := append(repo.consignments, consignment)
+	repo.consignments = updated
+	repo.mu.Unlock()
+	return consignment, nil
+}
+
+// GetAll consignments
+func (repo *Repository) GetAll() []*pb.Consignment {
+	return repo.consignments
+}
+
+// Service should implement all of the methods to satisfy the service
+// we defined in our protobuf definition. You can check the interface
+// in the generated code itself for the exact method signatures etc
+// to give you a better idea.
+type service struct {
+	repo repository
+}
+
+// CreateConsignment - we created just one method on our service,
+// which is a create method, which takes a context and a request as an
+// argument, these are handled by the gRPC server.
+func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment) (*pb.Response, error) {
+
+	// Save our consignment
+	consignment, err := s.repo.Create(req)
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal(data, &consignment)
-	return consignment, err
+
+	// Return matching the `Response` message we created in our
+	// protobuf definition.
+	return &pb.Response{Created: true, Consignment: consignment}, nil
+}
+
+// GetConsignments -
+func (s *service) GetConsignments(ctx context.Context, req *pb.GetRequest) (*pb.Response, error) {
+	consignments := s.repo.GetAll()
+	return &pb.Response{Consignments: consignments}, nil
 }
 
 func main() {
-	// Set up a connection to the server.
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	repo := &Repository{}
+
+	// Set-up our gRPC server.
+	lis, err := net.Listen("tcp", port)
 	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
+		log.Fatalf("failed to listen: %v", err)
 	}
-	defer conn.Close()
-	client := pb.NewShippingServiceClient(conn)
+	s := grpc.NewServer()
 
-	// Contact the server and print out its response.
-	file := defaultFilename
-	if len(os.Args) > 1 {
-		file = os.Args[1]
+	// Register our service with the gRPC server, this will tie our
+	// implementation into the auto-generated interface code for our
+	// protobuf definition.
+	pb.RegisterShippingServiceServer(s, &service{repo})
+
+	log.Println("Running on port:", port)
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
-
-	consignment, err := parseFile(file)
-
-	if err != nil {
-		log.Fatalf("Could not parse file: %v", err)
-	}
-
-	r, err := client.CreateConsignment(context.Background(), consignment)
-	if err != nil {
-		log.Fatalf("Could not greet: %v", err)
-	}
-	log.Printf("Created: %t", r.Created)
 }
